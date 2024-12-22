@@ -236,8 +236,19 @@ def obtenerDatosUsuario(request):
     Con el id del usuario se puede obtener el objeto y devolver
     el objeto Json con la informacion necesaria.
     """
+
+    usuario = User.objects.get(id=idUsuario)
+    datos_usuario = datosUsuario.objects.get(usrRel=usuario)
     return JsonResponse({
-        'resp':'200'
+        'idUsuario': usuario.id,
+        'usernameUsuario': usuario.username,
+        'emailUsuario': usuario.email,
+        'nombreUsuario': usuario.first_name,
+        'apellidoUsuario': usuario.last_name,
+        'profesionUsuario': datos_usuario.profesion,
+        'nroCelular': datos_usuario.nroCelular,
+        'perfilUsuario': datos_usuario.perfilUsuario,
+        'resp': '200'
     })
 
 def actualizarUsuario(request):
@@ -249,6 +260,26 @@ def actualizarUsuario(request):
     de la base de datos. Con el objeto capturado modificar los campos respectivos y finalmente
     ejecutar el metodo save() para su respectiva actualizacion
     """
+    id_usuario = request.POST.get('idUsuario', None) 
+    if request.method == 'POST':
+        id_usuario = request.POST.get('idUsuario')
+        nombre_usuario = request.POST.get('nombreUsuario')
+        apellido_usuario = request.POST.get('apellidoUsuario')
+        profesion_usuario = request.POST.get('profesionUsuario')
+        nro_celular = request.POST.get('nroCelular')
+        perfil_usuario = request.POST.get('perfilUsuario')
 
-    return HttpResponseRedirect(reverse('app4:consolaAdministrador'))
+        usuario = User.objects.get(id=id_usuario)
+        datos_usuario = datosUsuario.objects.get(usrRel=usuario)
+
+        usuario.first_name = nombre_usuario
+        usuario.last_name = apellido_usuario
+        usuario.save()
+
+        datos_usuario.profesion = profesion_usuario
+        datos_usuario.nroCelular = nro_celular
+        datos_usuario.perfilUsuario = perfil_usuario
+        datos_usuario.save()
+        
+    return HttpResponseRedirect(reverse('app3:consolaAdministrador'))
 
